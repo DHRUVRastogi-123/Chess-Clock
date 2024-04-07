@@ -20,68 +20,105 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 @Composable
-fun TimeClock(initialTime: String, turn: Boolean, setTurn: (Boolean) -> Unit, setTime: (String) -> Unit, setTurnOther: (Boolean) -> Unit) {
-    var currentTime by remember { mutableStateOf(initialTime) }
-    var isTurn by remember { mutableStateOf(turn) }
+fun TimeClock(initialTime1: String, initialTime2: String) {
+    var currentTime1 by remember { mutableStateOf(initialTime1) }
+    var isTurn1 by remember { mutableStateOf(true) }
+    var currentTime2 by remember { mutableStateOf(initialTime2) }
+    var isTurn2 by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isTurn) {
-        while (isTurn) {
-            delay(1000) // Decrease time every second
-            val timeParts = currentTime.split(":")
-            var minutes = timeParts[0].toInt()
-            var seconds = timeParts[1].toInt()
-            if (seconds == 0) {
-                minutes -= 1
-                seconds = 60
+    LaunchedEffect(isTurn1) {
+        while (isTurn1) {
+            if(currentTime1 == "Time's Up!" || currentTime2 == "Time's Up!"){
+                isTurn1 = false
             }
-            val newTime = String.format("%02d:%02d", minutes, seconds - 1)
-            currentTime = newTime
-            if (newTime == "00:00") {
-                isTurn = false
-                currentTime = "Time Up!"
+            currentTime1 = updateTimer(currentTime1)
+            print(5)
+        }
+    }
+
+    LaunchedEffect(isTurn2) {
+        while (isTurn2) {
+            if(currentTime2 == "Time's Up!" || currentTime1 == "Time's Up!"){
+                isTurn2 = false
             }
+            currentTime2 = updateTimer(currentTime2)
+            print(10)
         }
     }
 
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(screenHeight / 2)
-            .pointerInput(Unit) {
-                detectTapGestures {
-                    isTurn = !isTurn
-                    setTurn(isTurn)
-                    setTurnOther(!isTurn)
-                    setTime(currentTime)
-                }
-            }
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = currentTime,
-            modifier = Modifier.fillMaxSize(),
-            color = Color.Gray,
-            fontSize = 88.sp,
-            textAlign = TextAlign.Center,
-            fontStyle = FontStyle.Normal,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Monospace,
-        )
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(screenHeight / 2)
+                .pointerInput(Unit) {
+                    detectTapGestures {
+                        isTurn1 = false
+                        isTurn2 = true
+                    }
+                }
+        ) {
+            Text(
+                text = currentTime1,
+                modifier = Modifier.fillMaxSize(),
+                color = Color.Gray,
+                fontSize = 88.sp,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Normal,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+            )
+        }
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(screenHeight / 2)
+                .pointerInput(Unit) {
+                    detectTapGestures {
+                        isTurn2 = false
+                        isTurn1 = true
+                    }
+                }
+        ) {
+            Text(
+                text = currentTime2,
+                modifier = Modifier.fillMaxSize(),
+                color = Color.Gray,
+                fontSize = 88.sp,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Normal,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+            )
+        }
     }
+}
+
+
+suspend fun updateTimer(currentTime: String): String {
+    delay(1000) // Decrease time every second
+    val timeParts = currentTime.split(":")
+    var minutes = timeParts[0].toInt()
+    var seconds = timeParts[1].toInt()
+    if (seconds == 0) {
+        minutes -= 1
+        seconds = 60
+    }
+    val newTime = String.format("%02d:%02d", minutes, seconds - 1)
+    if (newTime == "00:00") {
+        return "Time's Up!"
+    }
+    return newTime
 }
 
 @Preview
 @Composable
-fun Call(){
-    val (turn1, setTurn1) = remember { mutableStateOf(true) }
-    val (turn2, setTurn2) = remember { mutableStateOf(false) }
-    val (time1, setTime1) = remember { mutableStateOf("00:15") }
-    val (time2, setTime2) = remember { mutableStateOf("00:15") }
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        TimeClock(initialTime = time1, turn = turn1, setTurn = setTurn1, setTime = setTime1, setTurnOther = setTurn2)
-        TimeClock(initialTime = time2, turn = turn2, setTurn = setTurn2, setTime = setTime2, setTurnOther = setTurn1)
-    }
+fun Call() {
+    TimeClock(
+        initialTime1 = "00:10",
+        initialTime2 = "00:10"
+    )
 }
