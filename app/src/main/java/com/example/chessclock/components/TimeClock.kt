@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -32,6 +34,7 @@ fun TimeClock(initialTime1: String, initialTime2: String) {
     var isTurn2 by remember { mutableStateOf(false) }
     var move1 by remember { mutableIntStateOf(0) }
     var move2 by remember { mutableIntStateOf(0) }
+    var pauseOrPlay by remember { mutableIntStateOf(R.drawable.pauseclock) }
 
     LaunchedEffect(isTurn1) {
         while (isTurn1) {
@@ -93,8 +96,42 @@ fun TimeClock(initialTime1: String, initialTime2: String) {
                 contentScale = ContentScale.FillBounds
             )
 
-            Row() {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.CenterHorizontally)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            pauseOrPlay = if (pauseOrPlay == R.drawable.pauseclock) R.drawable.playclock else R.drawable.pauseclock
+                        }
+                    }
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(50.dp),
+                    color = Color.Black
+                ) {
+                    Image(
+                        painter = painterResource(id = pauseOrPlay),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(color= Color.White)
+                    )
+                }
 
+                Surface(
+                    modifier = Modifier
+                        .height(45.dp)
+                        .width(45.dp),
+                    color = Color.Black
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.reloadclock),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(color= Color.White)
+                    )
+                }
             }
         }
 
