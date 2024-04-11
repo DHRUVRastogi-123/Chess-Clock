@@ -1,5 +1,6 @@
 package com.example.chessclock.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.*
 import androidx.compose.ui.input.pointer.pointerInput
@@ -10,13 +11,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.example.chessclock.R
 import kotlinx.coroutines.delay
 
 @Composable
@@ -25,6 +30,8 @@ fun TimeClock(initialTime1: String, initialTime2: String) {
     var isTurn1 by remember { mutableStateOf(true) }
     var currentTime2 by remember { mutableStateOf(initialTime2) }
     var isTurn2 by remember { mutableStateOf(false) }
+    var move1 by remember { mutableIntStateOf(0) }
+    var move2 by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(isTurn1) {
         while (isTurn1) {
@@ -53,11 +60,13 @@ fun TimeClock(initialTime1: String, initialTime2: String) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(screenHeight / 2)
+                .height(screenHeight / 2 - 40.dp)
+                .rotate(180F)
                 .pointerInput(Unit) {
                     detectTapGestures {
                         isTurn1 = false
                         isTurn2 = true
+                        move1 += 1
                     }
                 }
         ) {
@@ -72,14 +81,32 @@ fun TimeClock(initialTime1: String, initialTime2: String) {
                 fontFamily = FontFamily.Monospace,
             )
         }
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(screenHeight / 2)
+                .height(80.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.strip),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds
+            )
+
+            Row() {
+
+            }
+        }
+
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(screenHeight / 2 - 40.dp)
                 .pointerInput(Unit) {
                     detectTapGestures {
                         isTurn2 = false
                         isTurn1 = true
+                        move2 += 1
                     }
                 }
         ) {
