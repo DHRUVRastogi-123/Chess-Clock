@@ -1,6 +1,7 @@
 package com.example.chessclock.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.*
 import androidx.compose.ui.input.pointer.pointerInput
@@ -110,20 +111,31 @@ fun TimeClock(initialTime1: String, initialTime2: String) {
                 Surface(
                     modifier = Modifier
                         .height(50.dp)
-                        .width(50.dp),
+                        .width(50.dp)
+                    .clickable{
+                        isTurn1 =! isTurn1
+                        isTurn2 =! isTurn2
+                    },
                     color = Color.Black
                 ) {
                     Image(
                         painter = painterResource(id = pauseOrPlay),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(color= Color.White)
+                        colorFilter = ColorFilter.tint(color= Color.White),
+                        contentScale = ContentScale.FillBounds
                     )
                 }
 
                 Surface(
                     modifier = Modifier
                         .height(45.dp)
-                        .width(45.dp),
+                        .width(45.dp)
+                        .clickable{
+                            currentTime1 = initialTime1
+                            currentTime2 = initialTime2
+                            move1 = 0
+                            move2 = 0
+                        },
                     color = Color.Black
                 ) {
                     Image(
